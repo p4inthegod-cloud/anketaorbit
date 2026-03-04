@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета ученика | Smart Money Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #22222e;
+    --accent: #d4a853;
+    --accent2: #8b6fc4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --danger: #e05252;
+    --success: #52b788;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 50px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(212,168,83,0.3);
+    padding: 6px 18px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    background: rgba(212,168,83,0.05);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 80px);
+    letter-spacing: 2px;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--accent);
+    display: block;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 480px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 28px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 28px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-transform: uppercase;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* Question card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: transparent;
+    transition: background 0.2s;
+  }
+
+  .card.answered::before {
+    background: var(--accent);
+  }
+
+  .card:hover {
+    border-color: rgba(212,168,83,0.2);
+  }
+
+  .q-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  /* Radio options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    color: var(--muted);
+    user-select: none;
+  }
+
+  .option-label:hover {
+    border-color: rgba(212,168,83,0.3);
+    color: var(--text);
+    background: rgba(212,168,83,0.04);
+  }
+
+  .option-label input[type="radio"],
+  .option-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .option-label .dot {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .option-label .dot.sq {
+    border-radius: 3px;
+  }
+
+  .option-label .dot::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .option-label .dot.sq::after {
+    border-radius: 2px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .option-label input:checked + .dot {
+    border-color: var(--accent);
+    background: rgba(212,168,83,0.1);
+  }
+
+  .option-label input:checked + .dot::after {
+    opacity: 1;
+  }
+
+  .option-label:has(input:checked) {
+    border-color: rgba(212,168,83,0.4);
+    color: var(--text);
+    background: rgba(212,168,83,0.06);
+  }
+
+  /* Textarea */
+  .text-answer {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .text-answer::placeholder { color: var(--muted); }
+  .text-answer:focus { border-color: rgba(212,168,83,0.4); }
+
+  /* Range slider */
+  .range-wrap {
+    padding: 8px 0;
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(212,168,83,0.15);
+    transition: box-shadow 0.2s;
+  }
+
+  input[type="range"]:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 0 8px rgba(212,168,83,0.1);
+  }
+
+  .range-value {
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin-top: 8px;
+    letter-spacing: 2px;
+  }
+
+  /* Submit */
+  .submit-wrap {
+    text-align: center;
+    margin-top: 40px;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+
+  .btn-submit {
+    background: var(--accent);
+    color: #09090f;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    border: none;
+    padding: 16px 60px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-submit:hover {
+    background: #e8bc67;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(212,168,83,0.25);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  /* Result screen */
+  .result-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .result-screen.visible { display: block; }
+
+  .result-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+  }
+
+  .result-sub {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 400px;
+    margin: 0 auto 40px;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    text-align: left;
+    margin: 40px 0;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+  }
+
+  .result-card-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .result-card-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+  }
+
+  .answers-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px;
+    text-align: left;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .answer-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .answer-item:last-child { border-bottom: none; }
+
+  .answer-q {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 300;
+  }
+
+  .answer-a {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .btn-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-content { animation: fadeDown 0.4s ease both; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Smart Money Concepts</div>
+    <h1>Входная<span>Анкета</span></h1>
+    <p class="subtitle">Пройди честно — это поможет сфокусировать обучение именно на твоих слабых точках.</p>
+  </div>
+
+  <!-- Form -->
+  <div class="form-content" id="formContent">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <span class="progress-label">Прогресс</span>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <span class="progress-count" id="progressCount">0 / 20</span>
+    </div>
+
+    <form id="quizForm">
+
+      <!-- БЛОК 1: Общее -->
+      <div class="section" style="animation-delay:0.05s">
+        <div class="section-title">01 — Общий уровень</div>
+
+        <!-- Q1 -->
+        <div class="card" id="card-q1">
+          <div class="q-num">Вопрос 01</div>
+          <div class="q-text">Сколько времени ты торгуешь / изучаешь трейдинг?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q1" value="Меньше 3 месяцев"><span class="dot"></span> Меньше 3 месяцев</label>
+            <label class="option-label"><input type="radio" name="q1" value="3–12 месяцев"><span class="dot"></span> 3–12 месяцев</label>
+            <label class="option-label"><input type="radio" name="q1" value="1–3 года"><span class="dot"></span> 1–3 года</label>
+            <label class="option-label"><input type="radio" name="q1" value="Больше 3 лет"><span class="dot"></span> Больше 3 лет</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="card" id="card-q2">
+          <div class="q-num">Вопрос 02</div>
+          <div class="q-text">Есть ли у тебя опыт торговли на реальном счёте?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q2" value="Нет, только демо"><span class="dot"></span> Нет, только демо</label>
+            <label class="option-label"><input type="radio" name="q2" value="Начинал, но небольшой депозит"><span class="dot"></span> Начинал, но небольшой депозит</label>
+            <label class="option-label"><input type="radio" name="q2" value="Да, торгую регулярно"><span class="dot"></span> Да, торгую регулярно</label>
+          </div>
+        </div>
+
+        <!-- Q3 — самооценка -->
+        <div class="card" id="card-q3">
+          <div class="q-num">Вопрос 03</div>
+          <div class="q-text">Как ты оцениваешь свой уровень понимания концепции Smart Money?</div>
+          <div class="range-wrap">
+            <div class="range-labels">
+              <span>Ничего не знаю</span>
+              <span>Понимаю на 50%</span>
+              <span>Знаю отлично</span>
+            </div>
+            <input type="range" min="1" max="10" value="5" id="rangeQ3" name="q3" oninput="updateRange('rangeQ3','rangeVal3'); updateProgress()">
+            <div class="range-value" id="rangeVal3">5 / 10</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- БЛОК 2: Слом структуры -->
+      <div class="section" style="animation-delay:0.1s">
+        <div class="section-title">02 — Слом структуры (BOS / CHoCH)</div>
+
+        <!-- Q4 -->
+        <div class="card" id="card-q4">
+          <div class="q-num">Вопрос 04</div>
+          <div class="q-text">В чём разница между BOS (Break of Structure) и CHoCH (Change of Character)?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q4" value="BOS — подтверждение тренда, CHoCH — его смена"><span class="dot"></span> BOS — подтверждение тренда, CHoCH — его смена</label>
+            <label class="option-label"><input type="radio" name="q4" value="Это одно и то же, разные названия"><span class="dot"></span> Это одно и то же, разные названия</label>
+            <label class="option-label"><input type="radio" name="q4" value="BOS — смена тренда, CHoCH — подтверждение"><span class="dot"></span> BOS — смена тренда, CHoCH — подтверждение</label>
+            <label class="option-label"><input type="radio" name="q4" value="Не уверен / не знаю"><span class="dot"></span> Не уверен / не знаю</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="card" id="card-q5">
+          <div class="q-num">Вопрос 05</div>
+          <div class="q-text">На каком таймфрейме ты определяешь структуру в первую очередь?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q5" value="M1–M5 (скальп)"><span class="dot"></span> M1–M5 (скальп)</label>
+            <label class="option-label"><input type="radio" name="q5" value="M15–H1 (интрадей)"><span class="dot"></span> M15–H1 (интрадей)</label>
+            <label class="option-label"><input type="radio" name="q5" value="H4–D1 (свинг)"><span class="dot"></span> H4–D1 (свинг)</label>
+            <label class="option-label"><input type="radio" name="q5" value="Не понимаю, с чего начать"><span class="dot"></span> Не понимаю, с чего начать</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="card" id="card-q6">
+          <div class="q-num">Вопрос 06</div>
+          <div class="q-text">Опиши своими словами, что значит «слом структуры» на рынке. Как ты это определяешь на графике?</div>
+          <textarea class="text-answer" name="q6" placeholder="Напиши 2–4 предложения..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+
+      <!-- БЛОК 3: Имбалансы -->
+      <div class="section" style="animation-delay:0.15s">
+        <div class="section-title">03 — Имбалансы (FVG / Imbalance)</div>
+
+        <!-- Q7 -->
+        <div class="card" id="card-q7">
+          <div class="q-num">Вопрос 07</div>
+          <div class="q-text">Что такое Fair Value Gap (FVG)? Как он образуется?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q7" value="Зона между тремя свечами, где нет перекрытия теней"><span class="dot"></span> Зона между тремя свечами, где нет перекрытия теней</label>
+            <label class="option-label"><input type="radio" name="q7" value="Разрыв между уровнями поддержки и сопротивления"><span class="dot"></span> Разрыв между уровнями поддержки и сопротивления</label>
+            <label class="option-label"><input type="radio" name="q7" value="Свечи с длинными тенями при высоком объёме"><span class="dot"></span> Свечи с длинными тенями при высоком объёме</label>
+            <label class="option-label"><input type="radio" name="q7" value="Не уверен / не знаю"><span class="dot"></span> Не уверен / не знаю</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="card" id="card-q8">
+          <div class="q-num">Вопрос 08</div>
+          <div class="q-text">Всегда ли цена закрывает имбаланс? Как ты с этим работаешь?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q8" value="Да, цена всегда возвращается закрыть FVG"><span class="dot"></span> Да, цена всегда возвращается закрыть FVG</label>
+            <label class="option-label"><input type="radio" name="q8" value="Нет, не всегда — нужен контекст"><span class="dot"></span> Нет, не всегда — нужен контекст</label>
+            <label class="option-label"><input type="radio" name="q8" value="Торгую отбой от FVG без дополнительных условий"><span class="dot"></span> Торгую отбой от FVG без дополнительных условий</label>
+            <label class="option-label"><input type="radio" name="q8" value="Пока не торгую имбалансы"><span class="dot"></span> Пока не торгую имбалансы</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- БЛОК 4: Свинги -->
+      <div class="section" style="animation-delay:0.2s">
+        <div class="section-title">04 — Свинги (Swing High / Swing Low)</div>
+
+        <!-- Q9 -->
+        <div class="card" id="card-q9">
+          <div class="q-num">Вопрос 09</div>
+          <div class="q-text">Как ты определяешь «значимый» свинг-хай или свинг-лоу? По какому правилу?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q9" value="3-свечное правило (левая, правая ниже/выше пика)"><span class="dot"></span> 3-свечное правило (левее и правее должна быть свеча ниже/выше)</label>
+            <label class="option-label"><input type="radio" name="q9" value="На глаз, где видна очевидная точка разворота"><span class="dot"></span> На глаз, где видна очевидная точка разворота</label>
+            <label class="option-label"><input type="radio" name="q9" value="Использую индикатор ZigZag"><span class="dot"></span> Использую индикатор ZigZag</label>
+            <label class="option-label"><input type="radio" name="q9" value="Не понимаю как определять"><span class="dot"></span> Не понимаю, как определять</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="card" id="card-q10">
+          <div class="q-num">Вопрос 10</div>
+          <div class="q-text">Зачем нужно отслеживать свинги в контексте структуры рынка?</div>
+          <textarea class="text-answer" name="q10" placeholder="Опиши своими словами..." oninput="updateProgress()"></textarea>
+        </div>
+      </div>
+
+      <!-- БЛОК 5: Ликвидность -->
+      <div class="section" style="animation-delay:0.25s">
+        <div class="section-title">05 — Ликвидность</div>
+
+        <!-- Q11 -->
+        <div class="card" id="card-q11">
+          <div class="q-num">Вопрос 11</div>
+          <div class="q-text">Что такое «зоны ликвидности» в концепции Smart Money? Где они находятся?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q11" value="Уровни, где сконцентрированы стопы — за свингами и ровными уровнями"><span class="dot"></span> Уровни, где сконцентрированы стопы — за свингами и ровными уровнями</label>
+            <label class="option-label"><input type="radio" name="q11" value="Зоны с высоким объёмом торгов по индикатору"><span class="dot"></span> Зоны с высоким объёмом торгов по индикатору</label>
+            <label class="option-label"><input type="radio" name="q11" value="Уровни поддержки и сопротивления из классического ТА"><span class="dot"></span> Уровни поддержки и сопротивления из классического ТА</label>
+            <label class="option-label"><input type="radio" name="q11" value="Не уверен / не знаю"><span class="dot"></span> Не уверен / не знаю</label>
+          </div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="card" id="card-q12">
+          <div class="q-num">Вопрос 12</div>
+          <div class="q-text">Что такое «снятие ликвидности» (Liquidity Sweep / Stop Hunt)?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q12" value="Цена уходит за ключевой уровень, выбивает стопы и разворачивается"><span class="dot"></span> Цена уходит за ключевой уровень, выбивает стопы и разворачивается</label>
+            <label class="option-label"><input type="radio" name="q12" value="Резкое движение на новостях"><span class="dot"></span> Резкое движение на новостях</label>
+            <label class="option-label"><input type="radio" name="q12" value="Когда цена идёт против тренда несколько свечей"><span class="dot"></span> Когда цена идёт против тренда несколько свечей</label>
+            <label class="option-label"><input type="radio" name="q12" value="Не уверен / не знаю"><span class="dot"></span> Не уверен / не знаю</label>
+          </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="card" id="card-q13">
+          <div class="q-num">Вопрос 13</div>
+          <div class="q-text">Ты используешь ликвидность при поиске точки входа?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q13" value="Да, жду снятия ликвидности перед входом"><span class="dot"></span> Да, жду снятия ликвидности перед входом</label>
+            <label class="option-label"><input type="radio" name="q13" value="Знаю концепцию, но не применяю системно"><span class="dot"></span> Знаю концепцию, но не применяю системно</label>
+            <label class="option-label"><input type="radio" name="q13" value="Нет, пока не использую"><span class="dot"></span> Нет, пока не использую</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- БЛОК 6: Таймфреймы -->
+      <div class="section" style="animation-delay:0.3s">
+        <div class="section-title">06 — Таймфреймы и ТОП-ДАУН анализ</div>
+
+        <!-- Q14 -->
+        <div class="card" id="card-q14">
+          <div class="q-num">Вопрос 14</div>
+          <div class="q-text">Объясни принцип Top-Down анализа: с какого таймфрейма начинаешь и почему?</div>
+          <textarea class="text-answer" name="q14" placeholder="Опиши свой подход..." oninput="updateProgress()"></textarea>
+        </div>
+
+        <!-- Q15 -->
+        <div class="card" id="card-q15">
+          <div class="q-num">Вопрос 15</div>
+          <div class="q-text">Что происходит, если HTF (старший ТФ) говорит одно, а LTF (младший ТФ) — другое? Как ты поступаешь?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q15" value="Приоритет всегда у HTF, вход только при совпадении"><span class="dot"></span> Приоритет всегда у HTF, вход только при совпадении</label>
+            <label class="option-label"><input type="radio" name="q15" value="Торгую по тому, что вижу на рабочем ТФ"><span class="dot"></span> Торгую по тому, что вижу на рабочем ТФ</label>
+            <label class="option-label"><input type="radio" name="q15" value="Пропускаю сделку — жду ясности"><span class="dot"></span> Пропускаю сделку — жду ясности</label>
+            <label class="option-label"><input type="radio" name="q15" value="Не понимаю, как совмещать ТФ"><span class="dot"></span> Не понимаю, как совмещать ТФ</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- БЛОК 7: Практика и ошибки -->
+      <div class="section" style="animation-delay:0.35s">
+        <div class="section-title">07 — Практика и слабые места</div>
+
+        <!-- Q16 -->
+        <div class="card" id="card-q16">
+          <div class="q-num">Вопрос 16</div>
+          <div class="q-text">Ведёшь ли ты торговый журнал? Как фиксируешь сделки?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q16" value="Да, веду подробно — скрины, заметки, RR"><span class="dot"></span> Да, веду подробно — скрины, заметки, RR</label>
+            <label class="option-label"><input type="radio" name="q16" value="Иногда, но не системно"><span class="dot"></span> Иногда, но не системно</label>
+            <label class="option-label"><input type="radio" name="q16" value="Нет, не веду"><span class="dot"></span> Нет, не веду</label>
+          </div>
+        </div>
+
+        <!-- Q17 — мультивыбор -->
+        <div class="card" id="card-q17">
+          <div class="q-num">Вопрос 17 — можно выбрать несколько</div>
+          <div class="q-text">Какие темы ты чувствуешь как наиболее слабые у себя?</div>
+          <div class="options">
+            <label class="option-label"><input type="checkbox" name="q17" value="Слом структуры (BOS/CHoCH)"><span class="dot sq"></span> Слом структуры (BOS/CHoCH)</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Имбалансы (FVG)"><span class="dot sq"></span> Имбалансы (FVG)</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Свинги и точки разворота"><span class="dot sq"></span> Свинги и точки разворота</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Ликвидность и стоп-ханты"><span class="dot sq"></span> Ликвидность и стоп-ханты</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Мультитаймфреймный анализ"><span class="dot sq"></span> Мультитаймфреймный анализ</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Точки входа и подтверждения"><span class="dot sq"></span> Точки входа и подтверждения</label>
+            <label class="option-label"><input type="checkbox" name="q17" value="Риск-менеджмент и размер позиции"><span class="dot sq"></span> Риск-менеджмент и размер позиции</label>
+          </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="card" id="card-q18">
+          <div class="q-num">Вопрос 18</div>
+          <div class="q-text">Опиши типичную ошибку, которую ты повторяешь в своих сделках.</div>
+          <textarea class="text-answer" name="q18" placeholder="Будь честен — это только для тебя и ментора..." oninput="updateProgress()"></textarea>
+        </div>
+
+        <!-- Q19 -->
+        <div class="card" id="card-q19">
+          <div class="q-num">Вопрос 19</div>
+          <div class="q-text">Что ты хочешь получить от этого модуля обучения? Чего ждёшь в первую очередь?</div>
+          <textarea class="text-answer" name="q19" placeholder="Цель, результат, ожидание..." oninput="updateProgress()"></textarea>
+        </div>
+
+        <!-- Q20 -->
+        <div class="card" id="card-q20">
+          <div class="q-num">Вопрос 20</div>
+          <div class="q-text">Сколько времени в день ты готов уделять практике (разбор графиков, бэктест)?</div>
+          <div class="options">
+            <label class="option-label"><input type="radio" name="q20" value="До 30 минут"><span class="dot"></span> До 30 минут</label>
+            <label class="option-label"><input type="radio" name="q20" value="30–60 минут"><span class="dot"></span> 30–60 минут</label>
+            <label class="option-label"><input type="radio" name="q20" value="1–2 часа"><span class="dot"></span> 1–2 часа</label>
+            <label class="option-label"><input type="radio" name="q20" value="2+ часа"><span class="dot"></span> 2+ часа</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-wrap">
+        <button type="button" class="btn-submit" onclick="submitForm()">Отправить анкету →</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Result screen -->
+  <div class="result-screen" id="resultScreen">
+    <span class="result-icon">✓</span>
+    <div class="result-title">Анкета заполнена</div>
+    <p class="result-sub">Ментор получил все ответы. Ниже — сводка для разбора перед занятием.</p>
+
+    <div class="result-grid" id="resultGrid"></div>
+
+    <div class="answers-box" id="answersBox"></div>
+
+    <br>
+    <button class="btn-reset" onclick="resetForm()">← Заполнить заново</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 20;
+  const answered = new Set();
+
+  function updateRange(rangeId, valId) {
+    const r = document.getElementById(rangeId);
+    document.getElementById(valId).textContent = r.value + ' / 10';
+    answered.add('q3');
+    updateCardState('card-q3', true);
+  }
+
+  function updateProgress() {
+    // Count filled
+    const form = document.getElementById('quizForm');
+
+    // Radios
+    const radioNames = ['q1','q2','q4','q5','q7','q8','q9','q11','q12','q13','q15','q16','q20'];
+    radioNames.forEach(name => {
+      const checked = form.querySelector(`input[name="${name}"]:checked`);
+      const hasAnswer = !!checked;
+      if (hasAnswer) answered.add(name); else answered.delete(name);
+      updateCardState(`card-${name}`, hasAnswer);
+    });
+
+    // Textareas
+    const textNames = ['q6','q10','q14','q18','q19'];
+    textNames.forEach(name => {
+      const el = form.querySelector(`textarea[name="${name}"]`);
+      const hasAnswer = el && el.value.trim().length > 3;
+      if (hasAnswer) answered.add(name); else answered.delete(name);
+      updateCardState(`card-${name}`, hasAnswer);
+    });
+
+    // Checkboxes q17
+    const checks = form.querySelectorAll('input[name="q17"]:checked');
+    if (checks.length > 0) { answered.add('q17'); updateCardState('card-q17', true); }
+    else { answered.delete('q17'); updateCardState('card-q17', false); }
+
+    // q3 always answered (range)
+    answered.add('q3');
+    updateCardState('card-q3', true);
+
+    const count = answered.size;
+    document.getElementById('progressCount').textContent = `${count} / ${TOTAL}`;
+    document.getElementById('progressBar').style.width = (count / TOTAL * 100) + '%';
+  }
+
+  function updateCardState(cardId, isAnswered) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    if (isAnswered) card.classList.add('answered');
+    else card.classList.remove('answered');
+  }
+
+  // Listen to all inputs
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => {
+    el.addEventListener('change', updateProgress);
+  });
+
+  // Init range
+  updateRange('rangeQ3', 'rangeVal3');
+  updateProgress();
+
+  async function sendToTelegram(data) {
+    const BOT_TOKEN = '8640260311:AAEkfg8lO3rb0XJxjEz7PVe0o4T7osmgFvk';
+    const CHAT_ID = '6746369295';
+
+    let msg = '📋 *Новая анкета ученика*\n';
+    msg += '━━━━━━━━━━━━━━━━━━━━\n\n';
+
+    const sections = [
+      { title: '👤 Общий уровень', keys: ['q1','q2','q3'] },
+      { title: '📊 Слом структуры', keys: ['q4','q5','q6'] },
+      { title: '⚡ Имбалансы (FVG)', keys: ['q7','q8'] },
+      { title: '🔄 Свинги', keys: ['q9','q10'] },
+      { title: '💧 Ликвидность', keys: ['q11','q12','q13'] },
+      { title: '⏱ Таймфреймы', keys: ['q14','q15'] },
+      { title: '🎯 Практика и слабые места', keys: ['q16','q17','q18','q19','q20'] },
+    ];
+
+    sections.forEach(sec => {
+      msg += `*${sec.title}*\n`;
+      sec.keys.forEach(key => {
+        msg += `• ${questions[key]}:\n  ${data[key]}\n`;
+      });
+      msg += '\n';
+    });
+
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: msg,
+        parse_mode: 'Markdown'
+      })
+    });
+  }
+
+  async function submitForm() {
+    const form = document.getElementById('quizForm');
+    const data = {};
+
+    // Radios
+    ['q1','q2','q4','q5','q7','q8','q9','q11','q12','q13','q15','q16','q20'].forEach(name => {
+      const el = form.querySelector(`input[name="${name}"]:checked`);
+      data[name] = el ? el.value : '—';
+    });
+
+    // Range
+    data['q3'] = document.getElementById('rangeQ3').value + ' / 10';
+
+    // Textareas
+    ['q6','q10','q14','q18','q19'].forEach(name => {
+      const el = form.querySelector(`textarea[name="${name}"]`);
+      data[name] = el && el.value.trim() ? el.value.trim() : '—';
+    });
+
+    // Checkboxes
+    const checks = [...form.querySelectorAll('input[name="q17"]:checked')].map(c => c.value);
+    data['q17'] = checks.length ? checks.join(', ') : '—';
+
+    // Loading state
+    const btn = document.querySelector('.btn-submit');
+    btn.textContent = 'Отправляем...';
+    btn.disabled = true;
+
+    try {
+      await sendToTelegram(data);
+    } catch(e) {
+      console.error('Telegram error:', e);
+    }
+
+    btn.textContent = 'Отправить анкету →';
+    btn.disabled = false;
+
+    buildResult(data);
+  }
+
+  const questions = {
+    q1: 'Опыт в трейдинге',
+    q2: 'Реальный счёт',
+    q3: 'Самооценка уровня SMC',
+    q4: 'BOS vs CHoCH',
+    q5: 'ТФ для определения структуры',
+    q6: 'Слом структуры — своими словами',
+    q7: 'Fair Value Gap',
+    q8: 'Всегда ли цена закрывает FVG?',
+    q9: 'Определение свинга',
+    q10: 'Зачем свинги в структуре — своими словами',
+    q11: 'Зоны ликвидности',
+    q12: 'Снятие ликвидности',
+    q13: 'Использование ликвидности при входе',
+    q14: 'Top-Down анализ — своими словами',
+    q15: 'HTF vs LTF конфликт',
+    q16: 'Торговый журнал',
+    q17: 'Слабые темы',
+    q18: 'Типичная ошибка',
+    q19: 'Ожидания от модуля',
+    q20: 'Время на практику в день',
+  };
+
+  function buildResult(data) {
+    // Count answered properly
+    let filled = 0;
+    Object.values(data).forEach(v => { if (v !== '—') filled++; });
+
+    // Grid stats
+    const gridEl = document.getElementById('resultGrid');
+    gridEl.innerHTML = `
+      <div class="result-card">
+        <div class="result-card-label">Заполнено вопросов</div>
+        <div class="result-card-value">${filled} / ${TOTAL}</div>
+      </div>
+      <div class="result-card">
+        <div class="result-card-label">Самооценка уровня</div>
+        <div class="result-card-value">${data.q3}</div>
+      </div>
+      <div class="result-card">
+        <div class="result-card-label">Слабые темы</div>
+        <div class="result-card-value" style="font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--text);margin-top:4px">${data.q17}</div>
+      </div>
+    `;
+
+    // Full answers
+    const box = document.getElementById('answersBox');
+    let html = '';
+    Object.entries(questions).forEach(([key, label]) => {
+      html += `<div class="answer-item">
+        <div class="answer-q">${label}</div>
+        <div class="answer-a">${data[key]}</div>
+      </div>`;
+    });
+    box.innerHTML = html;
+
+    // Switch screens
+    document.getElementById('formContent').style.display = 'none';
+    document.getElementById('resultScreen').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    document.getElementById('quizForm').reset();
+    answered.clear();
+    updateRange('rangeQ3', 'rangeVal3');
+    updateProgress();
+    document.getElementById('resultScreen').classList.remove('visible');
+    document.getElementById('formContent').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
